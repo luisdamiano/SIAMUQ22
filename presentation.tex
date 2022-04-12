@@ -150,16 +150,20 @@
 
 \title{\textbf{Automatic Dynamic Relevance Determination} \\
   % of atmospheric states over vertical pressure grids \\
-  for high-dimensional functional input model emulation}
+  for Gaussian process regressions with functional inputs}
 
-\author[Damiano, Niemi]{
-  \textbf{Luis Damiano}\footnote{
+\renewcommand*{\thefootnote}{\fnsymbol{footnote}}
+\author[Damiano et al]{
+  \textbf{Luis Damiano}\footnote[2]{
     \tiny{\href{mailto:ldamiano@iastate.edu}{ldamiano@iastate.edu}}
-  }, Jarad Niemi}
+  }\inst{1}, Joaquim Teixeira\inst{2}, Margaret Johnson\inst{2}, Jarad Niemi\inst{1}}
 
-\institute{Department of Statistics \\ Iowa State University}
+\institute{
+  \inst{1}Department of Statistics, Iowa State University \\
+  \inst{2}NASA Jet Propulsion Laboratory
+}
 
-\date[January 31st, 2022]{\tiny{NASA JPL MLS UQ tagup}\\ January 31st, 2022}
+\date[April 13th, 2022]{\tiny{SIAM Conference on Uncertainty Quantification}\\ April 13th, 2022}
 
 \begin{document}
 
@@ -175,13 +179,15 @@
 	Research Initiative on C-CHANGE:~Science for a Changing
 	Agriculture
       \item[-] Foundation for Food and Agriculture Research
+	Grant ID: CA18-SS-0000000278
       \end{itemize}
     }
   }
 \end{frame}
 
 % Introduction -----------------------------------------------------------------
-\myHearts{Data}
+\renewcommand{\thefootnote}{[\arabic{footnote}]}
+\myHearts{Overview \& Motivation}
 
 \begin{frame}
   \frametitle{Gaussian process with functional input}
@@ -228,10 +234,10 @@
   \end{tikzpicture}
 
   \begin{itemize}
-  \item Can we connect the functional input structure to a physical
+  \item<2-> Can we connect the functional input structure to a physical
     mechanism?
-  \item Can we integrate the functional input structure into the GP?
-  \item Can we circumvent input dimension reduction?
+  \item<3-> Can we integrate the functional input structure into the GP?
+  \item<4-> Can we circumvent input dimension reduction?
   \end{itemize}
 \end{frame}
 
@@ -274,8 +280,8 @@
       & Up/down slope
       & Water erosion \vspace{1ex}
       }
-        \visible<5->{%
-        \\
+	\visible<5->{%
+	\\
       Radiance
       & Chemical species
       & Elevation
@@ -299,6 +305,8 @@
   \end{quote}
 
 \end{frame}
+
+\myHearts{Overview \& Motivation}
 
 \begin{frame}
   \frametitle{Extending relevance}
@@ -336,7 +344,7 @@
     \node (solution2a) [txtbox1] [below=of prompt2]    [text
     width=25ex] [visible on=<3->]
     {
-      Permutation\\Feature\\\textit{Dynamic Importance}
+      Permutation\\Feature\\\textit{Dynamic Importance}\footnotemark[1]
     };
     \node (solution2b) [txtbox1] [below=of solution2a] [text
     width=25ex] [visible on=<4->]{
@@ -349,6 +357,7 @@
     \draw[shorten >=2ex,shorten <=2ex,line width=1pt] [->]
     [visible on=<4->] (solution1b.east) -- (solution2b.west);
   \end{tikzpicture}
+  \blankfootnote{$~^{[1]}$ Forthcoming paper}
 \end{frame}
 
 \begin{frame}
@@ -362,10 +371,10 @@
     \node (aspect1b)   at (0, 0)                        [text width=15ex] {
       Model tuning\\{\footnotesize \itshape (learning)}
     };
-    \node (aspect2)    [below=aspect1b]                 [text width=15ex] {
-      Distance\\{\footnotesize \itshape (dissimilarity)}
+    \node (aspect2)    [below=of aspect1b]              [text width=15ex] {
+      Distance\\{\footnotesize $d(X_i, X_j)$}
     };
-    \node (aspect3)    [below=aspect2]                  [text width=15ex] {
+    \node (aspect3)    [below=of aspect2]               [text width=15ex] {
       Weights\\{\footnotesize \itshape (relevance)}
     };
     %%%%%
@@ -383,12 +392,12 @@
     \node (eq2b) [below=of solution2b] {
       $\int_{\mathcal{T}}
       \omega(t)
-      {\left(X_i(t) - X_j(t) \right)}^2 dt
+      {\left(X_i(t) - X_j(t) \right)}^2 \mathrm{d}t
       $
     };
     %%%%%
     \node (par1b) [below=of eq1b] {
-      $\ell_1, \cdots, \ell_K > 0$
+      $\ell^{-2}_1, \cdots, \ell^{-2}_K > 0$
     };
     \node (par2b) [below=of eq2b] {
       $\omega(t): \mathcal{T} \to \mathbb{R}^+$
@@ -410,7 +419,9 @@
       \vspace{-.4in}
       \begin{figure}[h!]
 	\centering
-	\adjustbox{trim={.68\width} {.13\height} {0.0\width} {.1\height},clip,rotate={90},reflect}%
+	%\adjustbox{trim={.68\width} {.13\height} {0.0\width}
+	%{.1\height},clip,rotate={90},reflect}%
+	\adjustbox{trim={.68\width} {.\height} {0.0\width} {.1\height},clip}%
 	{
 	  \includegraphics[width=2\textwidth]{02-alf-weight-plot.pdf}
 	}
@@ -418,16 +429,19 @@
     \end{column}
     \begin{column}{0.5\textwidth}
       \begin{itemize}
-      \item<2-> An atmospheric component is most relevant at $\tau$
+      \item<2-> The index is most relevant at $\tau$
 	(relevance peak)
       \item<3-> Relevance increases at a $\lambda_1 = \lambda \kappa^{-1}$ rate
-	from ground up to the peak
+	from $t =0$ to the peak
       \item<4-> Relevance decreases at a $\lambda_2 = \lambda \kappa$ rate from
-	the peak all the way up
-      \item<5-> To predict radiance, look for vertical profiles that
-	are similar everywhere \emph{but especially} near $\tau$
-        \\ \uwave{circumvent input dimension reduction}
-      \item<6-> Priors go here
+	the peak to $t = 1$
+      \item<5-> To predict the output, look for input profiles that
+	are similar everywhere \textit{but especially} near $\tau$
+	\\ \visible<6->{\uwave{circumvent input dimension reduction}}
+      % \item<7-> Weakly informative priors; $\phi \sim
+      %   \textsc{InvGamma}(\cdot, \cdot)$, $\tau \sim \textsc{Beta}(\cdot,
+      %   \cdot)$, $\lambda \sim \textsc{N}^{+}(\cdot, \cdot)$, $\log(\kappa)
+      %   \sim \textsc{N}(\cdot, \cdot)$
       \end{itemize}
     \end{column}
   \end{columns}
@@ -450,16 +464,18 @@
       \text{exp}\left\{
       -0.5 \phi^{-2} \ d_f(X_i, X_j)
       \right\} \\
-    \invisible<1>{
+    \visible<2->{
     d_f(X_i, X_j)
     &= \int_{\mathcal{T}}
       \omega(t)
       {\left(X_i(t) - X_j(t) \right)}^2 dt
+      } \\
+    \visible<3->{
+    \omega(t)
+    &= \text{exp}\left\{-(t - \tau) \lambda \kappa^s s\right\}
       }
   \end{align}
 
-  ADD omega(t) and PRIORS HERE
-  
   \blankfootnote{
     $\sigma_{\varepsilon}^2 > 0$,
     $\sigma_{f}^2 > 0$,
@@ -473,41 +489,50 @@
   }
 
   \begin{description}
-  \item[Multiple inputs]<3-> e.g., correlation product
-  \item[Complex index spaces]<4-> e.g., spatio-temporal structures
-  \item[Flexibility]<5-> no need to match input-output structure nor index space
+  \item[Weak priors]<4-> $\phi \sim
+    \textsc{InvGamma}(\cdot, \cdot)$, $\tau \sim \textsc{Beta}(\cdot,
+    \cdot)$, $\lambda \sim \textsc{N}^{+}(\cdot, \cdot)$, $\log(\kappa)
+    \sim \textsc{N}(\cdot, \cdot)$
+  \item[Multiple inputs]<5-> e.g., correlation product
+  \item[Complex index spaces]<6-> e.g., spatio-temporal structures
+  \item[Flexibility]<7-> no need to match input-output structure nor index space
   \end{description}
 \end{frame}
 
-\myHearts{NASA's Microwave Limb Sounder\\\footnotesize\emph{a case study}}
+\myHearts{NASA's Microwave Limb Sounder\\\footnotesize\textit{a case study}}
 
 \begin{frame}
   \frametitle{Data structure}
   \begin{columns}[t]
     \begin{column}{0.5\textwidth}
-      \begin{tikzpicture}[overlay, remember picture]
-      \node[anchor=north west] (b) at (-.2, .9) {
-          \includegraphics[height=.9\textheight]{eda-profile.png}
-      };
-      \end{tikzpicture}
+      \begin{center}
+	\includegraphics[height=.4\textheight]{aura.jpg}
+
+	{\footnotesize \textit{Credit: NASA Aura}}
+
+	\vspace{5ex}
+
+	\definecolor{bright-spark}{RGB}{255, 195, 59}
+	\tikzstyle{nice-rectangle} = [rectangle, rounded corners,
+	minimum width=3cm, minimum height=1cm, text centered,
+	draw=ISUcardinal, fill=bright-spark, font=\sffamily]
+	\tikzset{every label/.style={font=\itshape\footnotesize}}
+	\begin{tikzpicture}
+	  \node (input) [nice-rectangle] [text width = 15ex] [label=below:Functional
+	  input $X(t)$] {Atmospheric constituents};
+	  \node
+	  (output) [nice-rectangle, right=of input]
+	  [label=below:Scalar output $y$] {Radiance};
+	  \draw [->] (input) [above] -- node {$f$} (output);
+	\end{tikzpicture}
+      \end{center}
     \end{column}
     \begin{column}{0.5\textwidth}
-        \begin{center}
-          \definecolor{bright-spark}{RGB}{255, 195, 59}
-          \tikzstyle{nice-rectangle} = [rectangle, rounded corners,
-          minimum width=3cm, minimum height=1cm, text centered,
-          draw=ISUcardinal, fill=bright-spark, font=\sffamily]
-          \tikzset{every label/.style={font=\itshape\footnotesize}}
-
-          \begin{tikzpicture}
-            \node (input) [nice-rectangle] [text width = 15ex] [label=below:Functional
-            input $X(t)$] {Atmospheric constituents};
-            \node
-            (output) [nice-rectangle, right=of input]
-            [label=below:Scalar output $y$] {Radiance};
-            \draw [->] (input) [above] -- node {$f$} (output);
-          \end{tikzpicture}
-        \end{center}
+      \begin{tikzpicture}[overlay, remember picture]
+	\node[anchor=north west] (b) at (-.2, .9) {
+	  \includegraphics[height=.9\textheight]{eda-profile.png}
+	};
+      \end{tikzpicture}
     \end{column}
   \end{columns}
 \end{frame}
@@ -647,7 +672,7 @@
 %       \item<4-> Relevance decreases at a $\lambda \kappa$ rate from
 %         the peak all the way up
 %       \item<5-> To predict radiance, look for vertical profiles that
-%         are similar everywhere \emph{but especially} near $\tau$
+%         are similar everywhere \textit{but especially} near $\tau$
 %       \end{itemize}
 %     \end{column}
 %   \end{columns}
@@ -664,23 +689,20 @@
 % % Results ----------------------------------------------------------------------
 % \myHearts{What did we learn?}
 
-% \begin{frame}
-%   \frametitle{fiGP:~an implementation}
-%   \begin{itemize}
-%   \item 8 training, 8 test complementary sets
-%   \item 1,000 soundings each
-%   \item Nine plausible model configurations
-%   \item One model fit separately per input-output pair
-%   \item Fully Bayesian inference
-%   \item Hamiltonian Monte Carlo using Stan
-%   \item 1 long chains
-%   \item Extensive search for an initial value
-%   \item 500 post-warmup iterations
-%   \item 1,500 posterior samples total
-%   \item No large scale approximation
-%   % 3 nodes x 2 sockets x 8 cores x 2.6ghz x 16 FLOPS/clock
-%   \end{itemize}
-% \end{frame}
+\begin{frame}
+  \frametitle{Implementation}
+  \begin{itemize}
+  \item 8 training, 8 test complementary sets
+  \item 1,000 soundings each
+  \item One model fit separately per input-output pair
+  \item Fully Bayesian inference
+  \item Hamiltonian Monte Carlo using Stan
+  \item 1 long chain
+  \item Extensive search for an initial value
+  \item 500 post-warmup iterations
+  \item 1,500 posterior samples
+  \end{itemize}
+\end{frame}
 
 \begin{frame}
   \frametitle{Weight function posterior samples}
@@ -713,21 +735,45 @@
 \begin{frame}
   \frametitle{Why a fiGP?}
   \begin{itemize}
-  \item[+]<1-> High dimensional inputs input with no dimension reduction
+  \item[+]<1-> High dimensional inputs with no dimension reduction
     \begin{itemize}
-    \item Reduce $340 \to 45$ unknowns compared to a full GP
+    \item Reduce unknowns $3 << K$
     \item Scales up for applications with higher input resolution
+      $\uparrow K$
     \end{itemize}
-  \item[+]<2-> Explicit link output correlation and
+  \item[+]<2-> Explicit link between output correlation and
     input functional structure
     \begin{itemize}
-    \item<2-> Can incorporate domain-specific knowledge, if any
+    \item<2-> Can incorporate domain-specific knowledge
+    \item<2-> Tangible for prior elicitation
     \item<2-> Interpretation $\to$ insight?
     \item<2-> Smooths out erratic relevance patterns
     \end{itemize}
-  \item[++]<3-> Extensible to \alert{\textbf{complex
-index spaces}}, e.g., spatio-temporal spectral inputs
+  \item[+]<3-> Similar predictive power as vector-input
+    GP\footnote{Forthcoming paper}
+  \item[++]<4-> Extensible to \alert{\textbf{complex
+index spaces}}, e.g., spatio-temporal spectral inputs\footnote{Future research}
   \end{itemize}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Acknowledgments}
+  \centering
+
+  The MLS team at JPL, California Institute of Technology
+
+  \vfill
+
+  {\huge Thank you!}
+
+  \vfill
+
+  \href{ldamiano@iastate.edu}{\beamergotobutton{mail}
+    ldamiano@iastate.edu}
+
+  \href{https://github.com/luisdamiano/siamuq22}{\beamergotobutton{repo}
+https://github.com/luisdamiano/siamuq22}
+
 \end{frame}
 
 % % \begin{frame}
@@ -775,76 +821,76 @@ index spaces}}, e.g., spatio-temporal spectral inputs
 
 % % \end{frame}
 
-% \myHearts{Appendix}
+\myHearts{Appendix}
 
 % % References -------------------------------------------------------------------
-% \section{References}
+\section{References}
 
-% \begin{frame}{References}
-%   \tiny
-%   \bibliographystyle{unsrt}
-%   \bibliography{references}
-% \end{frame}
+\begin{frame}{References}
+  \tiny
+  \bibliographystyle{unsrt}
+  \bibliography{references}
+\end{frame}
 
-% \begin{frame}
-%   \frametitle{Trapezoidal approximation}
+\begin{frame}
+  \frametitle{Trapezoidal approximation}
 
-%   \begin{figure}[h!]
-%     \centering
-%     %%\includegraphics[width=.6\textwidth]{plot-trapezoidal-approx}
-%     \caption[]{Trapezoidal approximation}
-%   \end{figure}
+  \begin{figure}[h!]
+    \centering
+    %%\includegraphics[width=.6\textwidth]{plot-trapezoidal-approx}
+    \caption[]{Trapezoidal approximation}
+  \end{figure}
 
-%   {
-%     \setlength{\abovedisplayskip}{-1cm}
-%     \begin{align}
-%       \int_{\mathcal{T}}
-%       \omega(t)
-%       {\left(X_i(t) - X_j(t) \right)}^2 dt
-%       \approx
-%       &
-%       \sum_{k = 2}^{K} {
-%       \left(t_{k} - t_{k - 1}\right)
-%       \frac{
-%       \Delta_{i, j, k} +
-%       \Delta_{i, j, k - 1}
-%       }{2}
-%       } \\
-%       \Delta_{i, j, k} =
-%       & \
-%       \omega(t_{k-1}) {\left(x_{i, k} - x_{j, k}\right)}^2
-%     \end{align}
-%   }
+  {
+    \setlength{\abovedisplayskip}{-1cm}
+    \begin{align}
+      \int_{\mathcal{T}}
+      \omega(t)
+      {\left(X_i(t) - X_j(t) \right)}^2 dt
+      \approx
+      &
+      \sum_{k = 2}^{K} {
+      \left(t_{k} - t_{k - 1}\right)
+      \frac{
+      \Delta_{i, j, k} +
+      \Delta_{i, j, k - 1}
+      }{2}
+      } \\
+      \Delta_{i, j, k} =
+      & \
+      \omega(t_{k-1}) {\left(x_{i, k} - x_{j, k}\right)}^2
+    \end{align}
+  }
 
-%   \blankfootnote{See~\cite{muehlenstaedt2017a} for a B-spline
-%     approach}
-% \end{frame}
+  \blankfootnote{See~\cite{muehlenstaedt2017a} for a B-spline
+    approach}
+\end{frame}
 
-% \begin{frame}
-%   \frametitle{Out-of-sample prediction}
-%   \begin{table}
-%     \adjustbox{width=0.89\textwidth}{%
-%       \centering
-%       \begin{tabular}{lrrrrr|r}
-%         \toprule
-%         \input{include/validation-statistics-RMSE}
-%       \end{tabular}
-%       \begin{tabular}{lrrrrr|r}
-%         \toprule
-%         \input{include/validation-statistics-PPLD}
-%       \end{tabular}}
-%     \caption{Mean validation statistics
-%       $\bar{v}^{(p, q)}$: RMSE (left) and negPPLD (right).
-%       Smaller values are better. Bold: best in class.}%
-%     \label{tab:validation-statistics-mini}
-%   \end{table}
+\begin{frame}
+  \frametitle{Out-of-sample prediction}
+  \begin{table}
+    \adjustbox{width=0.89\textwidth}{%
+      \centering
+      \begin{tabular}{lrrrrr|r}
+	\toprule
+	\input{include/validation-statistics-RMSE}
+      \end{tabular}
+      \begin{tabular}{lrrrrr|r}
+	\toprule
+	\input{include/validation-statistics-PPLD}
+      \end{tabular}}
+    \caption{Mean validation statistics
+      $\bar{v}^{(p, q)}$: RMSE (left) and negPPLD (right).
+      Smaller values are better. Bold: best in class.}%
+    \label{tab:validation-statistics-mini}
+  \end{table}
 
-%   Mean validation statistics: RMSE (left) and negative posterior
-% predictive log-density (right).  Smaller values are better. Bold: best
-% in column. \textsc{Edn} $\tau = 0, \kappa = 1$; \textsc{SDE} $\tau =
-% 0$; \textsc{ADE} $\tau, \kappa, \lambda$ all free; \textsc{ARD} as
-% many free parameters as measurements per vertical profile.
-% \end{frame}
+  Mean validation statistics: RMSE (left) and negative posterior
+predictive log-density (right).  Smaller values are better. Bold: best
+in column. \textsc{Edn} $\tau = 0, \kappa = 1$; \textsc{SDE} $\tau =
+0$; \textsc{ADE} $\tau, \kappa, \lambda$ all free; \textsc{ARD} as
+many free parameters as measurements per vertical profile.
+\end{frame}
 
 \end{document}
 

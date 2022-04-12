@@ -1,6 +1,6 @@
 .PHONY: pvc
 
 %.pdf: %.tex
-	latexmk -lualatex $<
+	latexmk --lualatex $<
 pvc:
-	latexmkg -lualatex -pvc --interaction=nonstopmode presentation.tex
+	latexmk --lualatex -pvc --interaction=nonstopmode presentation.tex
