@@ -1,0 +1,55 @@
+\documentclass{standalone}
+
+\usepackage{amsmath,amssymb,amsthm}
+\usepackage{tikz}
+\usetikzlibrary{positioning}
+
+\begin{document}
+
+\begin{tikzpicture}
+  [
+  txtbox1/.style={rectangle,align=center,draw=blue!50,fill=blue!20,thick},
+  every label/.style={font=\itshape\footnotesize}
+  ]
+  \tikzset{every node/.style={align=center}}
+  \node (prompt1)    at (0, 0)                       [text width=26ex]{
+    Some inputs\\matter more than others\\
+    $\mathbf{x}_1$ \emph{vs} $\mathbf{x}_2$
+  };
+  \node (prompt2)    [right=of prompt1]              [text width=26ex]{
+    Some index subspaces\\matter more than others\\
+    $X(t_1)$ \emph{vs} $X(t_2)$
+  };
+  %%%%%
+  \node (aspect1a)   [below left=of prompt1]         [text width=15ex] {
+    Screening\\{\footnotesize \itshape (exploration \& diagnostics)}
+  };
+  \node (aspect1b)   [below=of aspect1a]             [text width=15ex] {
+    Model tuning\\{\footnotesize \itshape (learning)}
+  };
+  %%%%%
+  \node (solution1a) [below=of prompt1]              [text width=25ex] {
+    Permutation\\Feature\\Importance
+  };
+  \node (solution1b) [below=of solution1a]           [text width=25ex] {
+    Automatic\\Relevance\\Determination
+  };
+  %%%%%
+  \node (solution2a) [txtbox1] [below=of prompt2]    [text width=25ex] {
+    Permutation\\Feature\\\emph{Dynamic Importance}
+  };
+  \node (solution2b) [txtbox1] [below=of solution2a] [text width=25ex] {
+    Automatic\\\emph{Dynamic Relevance}\\Determination
+  };
+  \draw[shorten >=2ex,shorten <-2ex,line width=1pt] [->]
+  (solution1a.east) -- (solution2a.west);
+  \draw[shorten >=2ex,shorten <-2ex,line width=1pt] [->]
+  (solution1b.east) -- (solution2b.west);
+\end{tikzpicture}
+
+\end{document}
+
+%%% Local Variables:
+%%% mode: latex
+%%% TeX-master:
+%%% End:

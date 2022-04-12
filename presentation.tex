@@ -1,0 +1,854 @@
+% !TeX program = lualatex
+\documentclass[aspectratio=169,t,xcolor=table]{beamer}
+
+% Text encoding
+% \usepackage{inputenc}
+% \inputencoding{utf8}
+
+% Language
+%\usepackage{babel}
+%\selectlanguage{english}
+
+% Layout
+\usepackage{adjustbox}
+
+% Underline
+\usepackage{ulem}
+
+% Hyperlinks
+\usepackage{hyperref}
+\hypersetup{
+  colorlinks=true,
+  filecolor=magenta,
+  urlcolor=cyan,
+  citecolor=cyan,
+  linkcolor=cyan
+}
+
+% Tables
+\usepackage{booktabs}
+
+% Math
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{bm}
+\usepackage{siunitx}
+\usepackage{mathtools}
+
+% Unnumbered footnote
+\let\svthefootnote\thefootnote%
+\textheight 1in
+\newcommand\blankfootnote[1]{%
+  \let\thefootnote\relax\footnotetext{#1}%
+  \let\thefootnote\svthefootnote%
+}
+
+% Tikz
+\usepackage{tikz}
+\usetikzlibrary{positioning,decorations.pathreplacing,quotes,overlay-beamer-styles}
+
+% Make it nicer
+\usepackage{emoji}
+
+% References
+%\usepackage[natbib=true]{biblatex}
+%\addbibresource{references.bib}
+%\usepackage{natbib}
+
+% Presentation settings
+\mode<presentation>
+{
+  \usetheme{default}
+  \usecolortheme{default}
+  \usefonttheme{default}
+  \setbeamertemplate{caption}
+
+  % Theme hacking
+  %% Default margin: 1cm
+  \setbeamersize{text margin left=0.5cm, text margin right=0.5cm}
+
+  %% Footer
+  \setbeamerfont{footline}{size=\fontsize{3}{0}\selectfont}
+  \setbeamercolor{section in head/foot}{fg=white, bg=ISUcardinal}
+  %%% https://tex.stackexchange.com/a/111466/225233
+  \setbeamertemplate{footline}
+  {
+    \hypersetup{allcolors=.}
+    \leavevmode%
+    \hbox{%
+      \begin{beamercolorbox}[wd=.2\paperwidth,ht=2.25ex,dp=1ex,left]{section
+	  in head/foot}%
+	\usebeamerfont{author in head/foot}\insertshortauthor{}
+      \end{beamercolorbox}%
+      \begin{beamercolorbox}[wd=.6\paperwidth,ht=2.25ex,dp=1ex,center]{section
+	  in head/foot}%
+	  \usebeamerfont{title in head/foot}\insertshorttitle{}
+	% \usebeamerfont{title in head/foot}Automatic Dynamic
+	% Relevance Determination
+      \end{beamercolorbox}%
+      \begin{beamercolorbox}[wd=.2\paperwidth,ht=2.25ex,dp=1ex,right]{section
+	  in head/foot}%
+	\usebeamerfont{date in head/foot}\insertshortdate{}\hspace*{2em}
+	\insertframenumber{} / \inserttotalframenumber\hspace*{2ex}
+      \end{beamercolorbox}}%
+    \vskip0pt%
+  }
+
+  %% Hide navigation bar
+  \beamertemplatenavigationsymbolsempty{}
+
+  %% ISU colors
+  \definecolor{ISUcardinal}{RGB}{200,16,46}
+  \definecolor{ISUgold}{RGB}{241,190,72}
+  \definecolor{ISUgray}{RGB}{82,71,39}
+  \definecolor{ISUsand}{RGB}{155,148,95}
+  \definecolor{ISUgreen}{RGB}{202,199,167}
+
+  %% Title page
+  \setbeamercolor*{title}{fg=ISUcardinal}
+
+  %% Frame
+  \setbeamercolor{frametitle}{fg=white, bg=ISUcardinal}
+
+  %% Lists
+  \setbeamertemplate{itemize item}[square]
+  \setbeamertemplate{itemize subitem}[triangle]
+  \setbeamertemplate{itemize subsubitem}[triangle]
+
+  \setbeamercolor{itemize item}{fg=ISUcardinal}
+  \setbeamercolor{itemize subitem}{fg=ISUcardinal}
+  \setbeamercolor{itemize subsubitem}{fg=ISUcardinal}
+
+  \setbeamercolor{description item}{fg=ISUcardinal}
+
+  %\setlength{\leftmargini}{0pt}
+  \setlength{\leftmarginii}{10pt}
+}
+
+\usepackage{DejaVuSerif}
+\usepackage[T1]{fontenc}
+
+\newcommand\myHearts[1]{
+  {
+    \setbeamercolor{background canvas}{bg=ISUcardinal}
+    \setbeamercolor{normal text}{fg=ISUgold}
+    \begin{frame}
+      \begin{tikzpicture}[overlay, remember picture]
+	\node[anchor=center] at (current page.center) {
+	  \begin{beamercolorbox}[center]{title}
+	    \Huge
+	    \color{ISUgold}
+	    #1
+	  \end{beamercolorbox}};
+      \end{tikzpicture}
+    \end{frame}
+  }
+}
+
+% Setup
+\graphicspath{{include/}}
+
+\title{\textbf{Automatic Dynamic Relevance Determination} \\
+  % of atmospheric states over vertical pressure grids \\
+  for high-dimensional functional input model emulation}
+
+\author[Damiano, Niemi]{
+  \textbf{Luis Damiano}\footnote{
+    \tiny{\href{mailto:ldamiano@iastate.edu}{ldamiano@iastate.edu}}
+  }, Jarad Niemi}
+
+\institute{Department of Statistics \\ Iowa State University}
+
+\date[January 31st, 2022]{\tiny{NASA JPL MLS UQ tagup}\\ January 31st, 2022}
+
+\begin{document}
+
+% Title page
+\begin{frame}
+  \titlepage{}
+  % \vspace{0.1in}
+  {
+    \tiny{
+      Funded, in part, by
+      \begin{itemize}
+      \item[-] ISU Presidential Interdisciplinary
+	Research Initiative on C-CHANGE:~Science for a Changing
+	Agriculture
+      \item[-] Foundation for Food and Agriculture Research
+      \end{itemize}
+    }
+  }
+\end{frame}
+
+% Introduction -----------------------------------------------------------------
+\myHearts{Data}
+
+\begin{frame}
+  \frametitle{Gaussian process with functional input}
+  \begin{tikzpicture}
+    [
+    txtbox1/.style={rectangle,align=center,draw=blue!50,fill=blue!20,thick},
+    txtbox2/.style={rectangle,align=center,draw=red!50,fill=red!20,thick},
+    every label/.style={font=\itshape\tiny}
+    ]
+
+    \node (inp)  [txtbox1] at ( 0,  0) [text width=16ex] {
+      Functional input \\ $X(t): \mathcal{T} \to \mathbb{R}$
+    };
+    \node (vec1) [txtbox1] [above right=4ex of inp]   [text width=20ex]
+    [label=below:No structural information]{
+      As a vector \\ $\mathbf{x} \in \mathbb{R}^K, K \in \mathbb{N}$
+    };
+    \node (vec2) [txtbox1] [below right=4ex of inp]   [text width=20ex]
+    [label=above:Additional modeling decisions]{
+      Basis representation \\ $\tilde{\mathbf{x}} \in \mathbb{R}^K, K \in \mathbb{N}$
+    };
+    \node (dred) [txtbox1] [above right=4ex of vec2] [text width=10ex]
+    [label=left:Many parameters]
+    {
+      Dimension \\ reduction
+    };
+    \node (gp)   [txtbox2] [right=4ex of dred] [text width=10ex] {
+      Gaussian \\ process
+    };
+    \node (out)  [txtbox2] [right=4ex of gp] [text width=10ex]  {
+      Output \\ $y \in \mathbb{R}$
+    };
+    \node [below=6ex of vec2.north, label=below:All this happens outside the GP] {
+    };
+    \draw [->] (inp.north) |- (vec1.west);
+    \draw [->] (inp.south) |- (vec2.west);
+    \draw [->] (vec1.east) -| (dred.north);
+    \draw [->] (vec2.east) -| (dred.south);
+    \draw [->] (dred.east) -- (gp.west);
+    \draw [->] (gp.east)   -- (out.west);
+    \path (inp.south west)
+    edge[decorate,decoration={brace,mirror,raise=10ex},line width=.6pt]
+    (inp.south west -| dred.south east);
+  \end{tikzpicture}
+
+  \begin{itemize}
+  \item Can we connect the functional input structure to a physical
+    mechanism?
+  \item Can we integrate the functional input structure into the GP?
+  \item Can we circumvent input dimension reduction?
+  \end{itemize}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Input structure information}
+  \begin{table}[]
+    \footnotesize
+    \begin{tabular}{@{}lllll@{}}
+      \toprule
+      \small Output
+      & \begin{tabular}[c]{@{}l@{}}\small Input\\ $X(t): \mathcal{T} \to
+	  \mathbb{R}$\end{tabular}
+      & \begin{tabular}[c]{@{}l@{}}\small Index\\ $t \in \mathcal{T}$\end{tabular}
+      & \begin{tabular}[c]{@{}l@{}}\small Index subspaces\\ $t \in
+	  \mathcal{T}_u$\end{tabular}
+      & \small Mechanism \\ \midrule
+      \visible<2->{%
+      Plant growth
+      & Phosphorus
+      & Depth
+      & Soil layers
+      & Root biomass \vspace{1ex}
+      }
+      \visible<3->{%
+      \\
+      & Precipitation
+      & Time
+      & Cycles, seasons
+      &
+	\begin{tabular}[c]{@{}l@{}}
+	  Germination \\photosynthesis \\ nutrient absorption
+	\end{tabular}
+      \vspace{1ex}
+      }
+      \visible<4->{%
+      \\
+      Soil erosion
+      & Elevation
+      & Distance
+      & Up/down slope
+      & Water erosion \vspace{1ex}
+      }
+        \visible<5->{%
+        \\
+      Radiance
+      & Chemical species
+      & Elevation
+      & Atmospheric layers
+      & Reflectivity \vspace{0ex}
+      }
+      \\
+      \bottomrule
+    \end{tabular}
+  \end{table}
+
+  \vfill
+  \begin{quote}<6->
+    Index subspaces can provide a meaningful representation of the
+    physical process
+  \end{quote}
+
+  \vfill
+  \begin{quote}<7->
+    Can we establish an explicit link $X(t) \xrightarrow{f} y$ for UQ?
+  \end{quote}
+
+\end{frame}
+
+\begin{frame}
+  \frametitle{Extending relevance}
+
+  \begin{tikzpicture}
+    [
+    txtbox1/.style={rectangle,align=center,draw=blue!50,fill=blue!20,thick},
+    every label/.style={font=\itshape\footnotesize}
+    ]
+    \tikzset{every node/.style={align=center}}
+    \node (prompt1)    at (0, 0)                       [text width=26ex]{
+      Some inputs\\matter more than others\\
+      $\mathbf{x}_1$ \textit{vs} $\mathbf{x}_2$
+    };
+    \node (prompt2)    [right=of prompt1]              [text
+    width=26ex] [visible on=<2->]{
+      Some index subspaces\\matter more than others\\
+      $X(t_1)$ \textit{vs} $X(t_2)$
+    };
+    %%%%%
+    \node (aspect1a)   [below left=of prompt1]         [text width=15ex] {
+      Screening\\{\footnotesize \itshape (exploration \& diagnostics)}
+    };
+    \node (aspect1b)   [below=of aspect1a]             [text width=15ex] {
+      Model tuning\\{\footnotesize \itshape (learning)}
+    };
+    %%%%%
+    \node (solution1a) [below=of prompt1]              [text width=25ex] {
+      Permutation\\Feature\\Importance
+    };
+    \node (solution1b) [below=of solution1a]           [text width=25ex] {
+      Automatic\\Relevance\\Determination
+    };
+    %%%%%
+    \node (solution2a) [txtbox1] [below=of prompt2]    [text
+    width=25ex] [visible on=<3->]
+    {
+      Permutation\\Feature\\\textit{Dynamic Importance}
+    };
+    \node (solution2b) [txtbox1] [below=of solution2a] [text
+    width=25ex] [visible on=<4->]{
+      Automatic\\\textit{Dynamic Relevance}\\Determination
+    };
+    \draw[shorten >=1ex,shorten <=2ex,line width=1pt] [->]
+    [visible on=<2->] (prompt1.east) -- (prompt2.west);
+    \draw[shorten >=2ex,shorten <=2ex,line width=1pt] [->]
+    [visible on=<3->] (solution1a.east) -- (solution2a.west);
+    \draw[shorten >=2ex,shorten <=2ex,line width=1pt] [->]
+    [visible on=<4->] (solution1b.east) -- (solution2b.west);
+  \end{tikzpicture}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Modeling \textit{dynamic} relevance}
+  \begin{tikzpicture}
+    [
+    txtbox1/.style={rectangle,align=center,draw=blue!50,fill=blue!20,thick},
+    every label/.style={font=\itshape\footnotesize}
+    ]
+    \tikzset{every node/.style={align=center}}
+    \node (aspect1b)   at (0, 0)                        [text width=15ex] {
+      Model tuning\\{\footnotesize \itshape (learning)}
+    };
+    \node (aspect2)    [below=aspect1b]                 [text width=15ex] {
+      Distance\\{\footnotesize \itshape (dissimilarity)}
+    };
+    \node (aspect3)    [below=aspect2]                  [text width=15ex] {
+      Weights\\{\footnotesize \itshape (relevance)}
+    };
+    %%%%%
+    \node (solution1b) [right=of aspect1b]              [text width=25ex] {
+      Automatic\\Relevance\\Determination
+    };
+    %%%%%
+    \node (solution2b) [txtbox1] [right=of solution1b]  [text width=25ex]{
+      Automatic\\\textit{Dynamic Relevance}\\Determination
+    };
+    %%%%%
+    \node (eq1b) [below=of solution1b] {
+      $\sum_{k=1}^K \frac{{(x_{i, k} - x_{j, k})}^2}{\ell_k^2}$
+    };
+    \node (eq2b) [below=of solution2b] {
+      $\int_{\mathcal{T}}
+      \omega(t)
+      {\left(X_i(t) - X_j(t) \right)}^2 dt
+      $
+    };
+    %%%%%
+    \node (par1b) [below=of eq1b] {
+      $\ell_1, \cdots, \ell_K > 0$
+    };
+    \node (par2b) [below=of eq2b] {
+      $\omega(t): \mathcal{T} \to \mathbb{R}^+$
+    };
+    \draw[shorten >=1ex,shorten <=1ex,line width=1pt] [->]
+    (solution1b.east) -- (solution2b.west);
+  \end{tikzpicture}
+\end{frame}
+
+\begin{frame}
+  \frametitle{A flexible weight function}
+
+  \begin{columns}[t]
+    \begin{column}{0.5\textwidth}
+      \begin{align*}
+	\omega(t)
+	&= \text{exp}\left\{-(t - \tau) \lambda \kappa^s s\right\}
+      \end{align*}
+      \vspace{-.4in}
+      \begin{figure}[h!]
+	\centering
+	\adjustbox{trim={.68\width} {.13\height} {0.0\width} {.1\height},clip,rotate={90},reflect}%
+	{
+	  \includegraphics[width=2\textwidth]{02-alf-weight-plot.pdf}
+	}
+      \end{figure}
+    \end{column}
+    \begin{column}{0.5\textwidth}
+      \begin{itemize}
+      \item<2-> An atmospheric component is most relevant at $\tau$
+	(relevance peak)
+      \item<3-> Relevance increases at a $\lambda_1 = \lambda \kappa^{-1}$ rate
+	from ground up to the peak
+      \item<4-> Relevance decreases at a $\lambda_2 = \lambda \kappa$ rate from
+	the peak all the way up
+      \item<5-> To predict radiance, look for vertical profiles that
+	are similar everywhere \emph{but especially} near $\tau$
+        \\ \uwave{circumvent input dimension reduction}
+      \item<6-> Priors go here
+      \end{itemize}
+    \end{column}
+  \end{columns}
+
+  \blankfootnote{
+    $s = \text{sign}(t - \tau)$,
+    $\tau > 0$,
+    $\lambda > 0$,
+    $\kappa > 0$,
+    $\mathcal{T} = [0, 1]$
+  }
+\end{frame}
+
+\begin{frame}{Functional Input Gaussian Process (fiGP)}
+  \begin{align}
+    \mathbf{y}
+    &\sim \mathcal{N}\left(0, \sigma_{f}^{2} \ \mathbf{R}_f + \sigma_{\varepsilon}^{2}\mathbf{I}\right) \\
+    {\left(\mathbf{R}_f\right)}_{ij}
+    &=
+      \text{exp}\left\{
+      -0.5 \phi^{-2} \ d_f(X_i, X_j)
+      \right\} \\
+    \invisible<1>{
+    d_f(X_i, X_j)
+    &= \int_{\mathcal{T}}
+      \omega(t)
+      {\left(X_i(t) - X_j(t) \right)}^2 dt
+      }
+  \end{align}
+
+  ADD omega(t) and PRIORS HERE
+  
+  \blankfootnote{
+    $\sigma_{\varepsilon}^2 > 0$,
+    $\sigma_{f}^2 > 0$,
+    $\phi > 0$,
+    $i, j = 1, \dots, N$
+  }
+  \blankfootnote{
+    \invisible<1>{
+      $\omega(t): \mathcal{T} \to (0, \infty)$
+    }
+  }
+
+  \begin{description}
+  \item[Multiple inputs]<3-> e.g., correlation product
+  \item[Complex index spaces]<4-> e.g., spatio-temporal structures
+  \item[Flexibility]<5-> no need to match input-output structure nor index space
+  \end{description}
+\end{frame}
+
+\myHearts{NASA's Microwave Limb Sounder\\\footnotesize\emph{a case study}}
+
+\begin{frame}
+  \frametitle{Data structure}
+  \begin{columns}[t]
+    \begin{column}{0.5\textwidth}
+      \begin{tikzpicture}[overlay, remember picture]
+      \node[anchor=north west] (b) at (-.2, .9) {
+          \includegraphics[height=.9\textheight]{eda-profile.png}
+      };
+      \end{tikzpicture}
+    \end{column}
+    \begin{column}{0.5\textwidth}
+        \begin{center}
+          \definecolor{bright-spark}{RGB}{255, 195, 59}
+          \tikzstyle{nice-rectangle} = [rectangle, rounded corners,
+          minimum width=3cm, minimum height=1cm, text centered,
+          draw=ISUcardinal, fill=bright-spark, font=\sffamily]
+          \tikzset{every label/.style={font=\itshape\footnotesize}}
+
+          \begin{tikzpicture}
+            \node (input) [nice-rectangle] [text width = 15ex] [label=below:Functional
+            input $X(t)$] {Atmospheric constituents};
+            \node
+            (output) [nice-rectangle, right=of input]
+            [label=below:Scalar output $y$] {Radiance};
+            \draw [->] (input) [above] -- node {$f$} (output);
+          \end{tikzpicture}
+        \end{center}
+    \end{column}
+  \end{columns}
+\end{frame}
+
+% \begin{frame}
+%   \frametitle{Are all atmospheric components equally relevant?}
+%   \begin{columns}[t]
+%     \begin{column}{0.5\textwidth}
+%       \begin{tikzpicture}[overlay, remember picture]
+%       \node[anchor=north west] (b) at (-.2, .9) {
+%         \includegraphics[height=.9\textheight]{nnGP-pfi}
+%       };
+%       \end{tikzpicture}
+%     \end{column}
+%     \begin{column}{0.5\textwidth}
+%       \begin{itemize}
+%       \item<2-> The large-scale mean radiance is largely driven by
+%         Temperature and O3
+%       \item<3-> Temperature is relevant across the board
+%       \item<4-> O3 and H2O are relevant overall, \\but especially for some
+%         radiance components
+%       \end{itemize}
+%     \end{column}
+%   \end{columns}
+% \end{frame}
+
+% \begin{frame}
+%   \frametitle{Are all atmospheric layers equally relevant?}
+%   \begin{columns}[t]
+%     \begin{column}{0.5\textwidth}
+%       \begin{tikzpicture}[overlay, remember picture]
+%       \node[anchor=north west] (b) at (-.2, .9) {
+%         \includegraphics[height=.9\textheight]{pfi-normalized-pressure}
+%       };
+%       \end{tikzpicture}
+%     \end{column}
+%     \begin{column}{0.5\textwidth}
+%       \begin{itemize}
+%       \item<2-> Overall, measurements near ground score higher than
+%         upper layers
+%       \item<3-> Each input has one or two marked peaks
+%       \item<4-> Relevance varies smoothly around the peak
+%       \item<5-> There is a contrast between
+%         high and low relevance layers,
+%         except perhaps for Temperature
+%       \end{itemize}
+
+%       \vspace{1.5in}
+
+%       {
+%         \rule{.45\textheight}{.1mm}
+%         \fontsize{4pt}{1pt}\selectfont
+%         Full ARD model trained on a testing set. Test set corrupted
+% one atmospheric variable at a time considering all measurements a
+% block. Full details on the manuscript. Terms and conditions apply.
+%       }
+%     \end{column}
+%   \end{columns}
+% \end{frame}
+
+% \myHearts{How to integrate this into an emulator?}
+
+% \begin{frame}{Notation}
+%     \only<1->{
+%     \begin{description}[labelwidth=117]
+%     \item[Index vector]<2-> $\mathbf{t}$ with the vertical pressure level
+%     \item[State vector]<3-> $\mathbf{x}_i$ characterizing an atmospheric
+%       vertical profile
+%     \item[Output scalar]<4-> $y_i$ is the radiance first
+%       functional principal component~\cite{johnson2020}
+%     \item[Sounding]<5-> a collection of an observed radiance, retrieved
+%       state and pressure vectors
+%     \end{description}
+%   }
+% \end{frame}
+
+% \begin{frame}{Functional Input Gaussian Process (fiGP)}
+%   \begin{align}
+%     \mathbf{y}
+%     &\sim \mathcal{N}\left(0, \sigma_{f}^{2} \ \mathbf{R}_f + \sigma_{\varepsilon}^{2}\mathbf{I}\right) \\
+%     {\left(\mathbf{R}_f\right)}_{ij}
+%     &=
+%       \text{exp}\left\{
+%       -0.5 \phi^{-2} \ d_f(X_i, X_j)
+%       \right\} \\
+%     \invisible<1>{
+%     d_f(X_i, X_j)
+%     &= \int_{\mathcal{T}}
+%       \omega(t)
+%       {\left(X_i(t) - X_j(t) \right)}^2 dt
+%       }
+%   \end{align}
+
+%   \blankfootnote{
+%     $\sigma_{\varepsilon}^2 > 0$,
+%     $\sigma_{f}^2 > 0$,
+%     $\phi > 0$,
+%     $i, j = 1, \dots, N$
+%   }
+%   \blankfootnote{
+%     \invisible<1>{
+%       $\omega(t): \mathcal{T} \to (0, \infty)$
+%     }
+%   }
+
+%   \begin{description}
+%   \item[Multiple inputs]<3-> e.g., correlation product
+%   \item[Complex index spaces]<4-> e.g., spatio-temporal structures
+%   \item[Flexibility]<5-> no need to match input-output structure nor index space
+%   \end{description}
+% \end{frame}
+
+% \begin{frame}
+%   \frametitle{A flexible weight function}
+
+%   \begin{columns}[t]
+%     \begin{column}{0.5\textwidth}
+%       \begin{align*}
+%         \omega(t)
+%         &= \text{exp}\left\{-(t - \tau) \lambda \kappa^s s\right\}
+%       \end{align*}
+%       \vspace{-.4in}
+%       \begin{figure}[h!]
+%         \centering
+%         \adjustbox{trim={.68\width} {.13\height} {0.0\width} {.1\height},clip,rotate={90},reflect}%
+%         {
+%           \includegraphics[width=2\textwidth]{02-alf-weight-plot.pdf}
+%         }
+%       \end{figure}
+%     \end{column}
+%     \begin{column}{0.5\textwidth}
+%       \begin{itemize}
+%       \item<2-> An atmospheric component is most relevant at $\tau$
+%         (relevance peak)
+%       \item<3-> Relevance increases at a $\lambda \kappa^{-1}$ rate
+%         from ground up to the peak
+%       \item<4-> Relevance decreases at a $\lambda \kappa$ rate from
+%         the peak all the way up
+%       \item<5-> To predict radiance, look for vertical profiles that
+%         are similar everywhere \emph{but especially} near $\tau$
+%       \end{itemize}
+%     \end{column}
+%   \end{columns}
+
+%   \blankfootnote{
+%     $s = \text{sign}(t - \tau)$,
+%     $\tau > 0$,
+%     $\lambda > 0$,
+%     $\kappa > 0$,
+%     $\mathcal{T} = [0, 1]$
+%   }
+% \end{frame}
+
+% % Results ----------------------------------------------------------------------
+% \myHearts{What did we learn?}
+
+% \begin{frame}
+%   \frametitle{fiGP:~an implementation}
+%   \begin{itemize}
+%   \item 8 training, 8 test complementary sets
+%   \item 1,000 soundings each
+%   \item Nine plausible model configurations
+%   \item One model fit separately per input-output pair
+%   \item Fully Bayesian inference
+%   \item Hamiltonian Monte Carlo using Stan
+%   \item 1 long chains
+%   \item Extensive search for an initial value
+%   \item 500 post-warmup iterations
+%   \item 1,500 posterior samples total
+%   \item No large scale approximation
+%   % 3 nodes x 2 sockets x 8 cores x 2.6ghz x 16 FLOPS/clock
+%   \end{itemize}
+% \end{frame}
+
+\begin{frame}
+  \frametitle{Weight function posterior samples}
+
+  \begin{figure}
+    \centering
+    \includegraphics[width=1\textwidth]{image2934-8.png}
+    % \includegraphics[width=1\textwidth]{fit-full-posterior-weights-selected.png}
+  \end{figure}
+\end{frame}
+
+% \begin{frame}
+%   \frametitle{Weights, inputs and output}
+
+%   \begin{figure}
+%     \centering
+%     \includegraphics[width=1\textwidth]{io-lines-rug.png}
+%   \end{figure}
+% \end{frame}
+
+\begin{frame}
+  \frametitle{fiGP vs a vector-input GP}
+
+  \begin{figure}
+    \centering
+    \includegraphics[height=.8\textheight]{weights-examples-pressure.pdf}
+  \end{figure}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Why a fiGP?}
+  \begin{itemize}
+  \item[+]<1-> High dimensional inputs input with no dimension reduction
+    \begin{itemize}
+    \item Reduce $340 \to 45$ unknowns compared to a full GP
+    \item Scales up for applications with higher input resolution
+    \end{itemize}
+  \item[+]<2-> Explicit link output correlation and
+    input functional structure
+    \begin{itemize}
+    \item<2-> Can incorporate domain-specific knowledge, if any
+    \item<2-> Interpretation $\to$ insight?
+    \item<2-> Smooths out erratic relevance patterns
+    \end{itemize}
+  \item[++]<3-> Extensible to \alert{\textbf{complex
+index spaces}}, e.g., spatio-temporal spectral inputs
+  \end{itemize}
+\end{frame}
+
+% % \begin{frame}
+% %   \frametitle{Learnings from this lil' experiment}
+
+% %   \small
+
+% %   \begin{columns}[t]
+% %     \begin{column}{.45\textwidth}
+% %       Vector input GP
+% %       \begin{itemize}
+% %       \item[+]<2-> Well-known, well-tested, readily available software
+% %       \item[+]<2-> Many fast approximations available
+% %       \item[+]<3-> Missing data in inputs
+% %       \end{itemize}
+% %       \vspace{0.25cm}
+% %       \begin{itemize}
+% %       \item[-]<3-> Output-agnostic FPCA decisions%: smoother, bases, knots
+% %       \item[-]<3-> Potential loss of information if not retaining all
+% %     components
+% %       \item[\emoji{monocle-face}]<4-> Interpretation
+% %       \item[\emoji{worried-face}]<5-> Parameter space scales with
+% %     functional input resolution
+% %       \end{itemize}
+% %     \end{column}
+
+% %     \begin{column}{.45\textwidth}
+% %       Functional input GP
+% %       \begin{itemize}
+% %       \item[+]<3-> Explicit link output correlation and
+% %     input functional structure
+% %       \item[+]<3-> Domain-specific knowledge
+% %       \item[+]<4-> Interpretation
+% %       \item[+]<5-> Parsimony
+% %       \item[\emoji{winking-face}]<6-> \alert{\textbf{Complex index spaces}},
+% %     e.g., spatio-temporal inputs
+% %       \end{itemize}
+% %       \vspace{0.25cm}
+% %       \begin{itemize}
+% %       \item[-]<2-> Custom software
+% %       \item[-]<2-> A less-explored approach, further research needed
+% %       \end{itemize}
+% %     \end{column}
+% %   \end{columns}
+
+% % \end{frame}
+
+% \myHearts{Appendix}
+
+% % References -------------------------------------------------------------------
+% \section{References}
+
+% \begin{frame}{References}
+%   \tiny
+%   \bibliographystyle{unsrt}
+%   \bibliography{references}
+% \end{frame}
+
+% \begin{frame}
+%   \frametitle{Trapezoidal approximation}
+
+%   \begin{figure}[h!]
+%     \centering
+%     %%\includegraphics[width=.6\textwidth]{plot-trapezoidal-approx}
+%     \caption[]{Trapezoidal approximation}
+%   \end{figure}
+
+%   {
+%     \setlength{\abovedisplayskip}{-1cm}
+%     \begin{align}
+%       \int_{\mathcal{T}}
+%       \omega(t)
+%       {\left(X_i(t) - X_j(t) \right)}^2 dt
+%       \approx
+%       &
+%       \sum_{k = 2}^{K} {
+%       \left(t_{k} - t_{k - 1}\right)
+%       \frac{
+%       \Delta_{i, j, k} +
+%       \Delta_{i, j, k - 1}
+%       }{2}
+%       } \\
+%       \Delta_{i, j, k} =
+%       & \
+%       \omega(t_{k-1}) {\left(x_{i, k} - x_{j, k}\right)}^2
+%     \end{align}
+%   }
+
+%   \blankfootnote{See~\cite{muehlenstaedt2017a} for a B-spline
+%     approach}
+% \end{frame}
+
+% \begin{frame}
+%   \frametitle{Out-of-sample prediction}
+%   \begin{table}
+%     \adjustbox{width=0.89\textwidth}{%
+%       \centering
+%       \begin{tabular}{lrrrrr|r}
+%         \toprule
+%         \input{include/validation-statistics-RMSE}
+%       \end{tabular}
+%       \begin{tabular}{lrrrrr|r}
+%         \toprule
+%         \input{include/validation-statistics-PPLD}
+%       \end{tabular}}
+%     \caption{Mean validation statistics
+%       $\bar{v}^{(p, q)}$: RMSE (left) and negPPLD (right).
+%       Smaller values are better. Bold: best in class.}%
+%     \label{tab:validation-statistics-mini}
+%   \end{table}
+
+%   Mean validation statistics: RMSE (left) and negative posterior
+% predictive log-density (right).  Smaller values are better. Bold: best
+% in column. \textsc{Edn} $\tau = 0, \kappa = 1$; \textsc{SDE} $\tau =
+% 0$; \textsc{ADE} $\tau, \kappa, \lambda$ all free; \textsc{ARD} as
+% many free parameters as measurements per vertical profile.
+% \end{frame}
+
+\end{document}
+
+%%% Local Variables:
+%%% mode: latex
+%%% TeX-master: t
+%%% End:
