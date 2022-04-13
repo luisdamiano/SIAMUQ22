@@ -199,45 +199,55 @@
     ]
 
     \node (inp)  [txtbox1] at ( 0,  0) [text width=16ex] {
-      Functional input \\ $X(t): \mathcal{T} \to \mathbb{R}$
+      Functional input \\
+      $X(t): \mathcal{T} \to \mathbb{R}$
     };
-    \node (vec1) [txtbox1] [above right=4ex of inp]   [text width=20ex]
-    [label=below:No structural information]{
-      As a vector \\ $\mathbf{x} \in \mathbb{R}^K, K \in \mathbb{N}$
-    };
-    \node (vec2) [txtbox1] [below right=4ex of inp]   [text width=20ex]
-    [label=above:Additional modeling decisions]{
-      Basis representation \\ $\tilde{\mathbf{x}} \in \mathbb{R}^K, K \in \mathbb{N}$
-    };
-    \node (dred) [txtbox1] [above right=4ex of vec2] [text width=10ex]
-    [label=left:Many parameters]
-    {
-      Dimension \\ reduction
-    };
+    \visible<2->{
+      \node (vec1) [txtbox1] [above right=4ex of inp]   [text width=20ex]
+      [label=below:No structural information]{
+	As a vector \\
+	$\mathbf{x} \in \mathbb{R}^K, K \in \mathbb{N}$
+      };
+      \node (vec2) [txtbox1] [below right=4ex of inp]   [text width=20ex]
+      [label=above:Additional modeling decisions]{
+	Basis representation \\
+	$\tilde{\mathbf{x}} \in \mathbb{R}^K, K \in \mathbb{N}$
+      };
+    }
+    \visible<3->{
+      \node (dred) [txtbox1] [above right=4ex of vec2] [text width=10ex]
+      [label=left:Many parameters]
+      {
+	Dimension \\ reduction
+      };
+    }
+
     \node (gp)   [txtbox2] [right=4ex of dred] [text width=10ex] {
       Gaussian \\ process
     };
     \node (out)  [txtbox2] [right=4ex of gp] [text width=10ex]  {
       Output \\ $y \in \mathbb{R}$
     };
-    \node [below=6ex of vec2.north, label=below:All this happens outside the GP] {
-    };
-    \draw [->] (inp.north) |- (vec1.west);
-    \draw [->] (inp.south) |- (vec2.west);
-    \draw [->] (vec1.east) -| (dred.north);
-    \draw [->] (vec2.east) -| (dred.south);
-    \draw [->] (dred.east) -- (gp.west);
+    \visible<5->{
+      \node [below=6ex of vec2.north, label=below:All this happens outside the GP] {
+      };
+    }
+    \draw [->] [visible on=<2->] (inp.north) |- (vec1.west);
+    \draw [->] [visible on=<2->] (inp.south) |- (vec2.west);
+    \draw [->] [visible on=<3->] (vec1.east) -| (dred.north);
+    \draw [->] [visible on=<3->] (vec2.east) -| (dred.south);
+    \draw [->] [visible on=<3->] (dred.east) -- (gp.west);
     \draw [->] (gp.east)   -- (out.west);
-    \path (inp.south west)
+    \path [visible on=<5->] (inp.south west)
     edge[decorate,decoration={brace,mirror,raise=10ex},line width=.6pt]
     (inp.south west -| dred.south east);
   \end{tikzpicture}
 
   \begin{itemize}
-  \item<2-> Can we connect the functional input structure to a physical
+  \item<4-> Can we connect the functional input structure to a physical
     mechanism?
-  \item<3-> Can we integrate the functional input structure into the GP?
-  \item<4-> Can we circumvent input dimension reduction?
+  \item<5-> Can we incorporate the functional input structure into the GP?
+  \item<6-> Can we circumvent input dimension reduction?
   \end{itemize}
 \end{frame}
 
