@@ -198,7 +198,8 @@
     every label/.style={font=\itshape\tiny}
     ]
 
-    \node (inp)  [txtbox1] at ( 0,  0) [text width=16ex] {
+    \node (inp)  [txtbox1] at ( 0,  0) [text width=16ex]
+    [label={[align=left]right:We observe \\ $\mathbf{x} \in \mathbb{R}^K$\\ $\mathbf{t}\in\mathcal{T}^K$}] {
       Functional input \\
       $X(t): \mathcal{T} \to \mathbb{R}$
     };
@@ -216,7 +217,7 @@
     }
     \visible<3->{
       \node (dred) [txtbox1] [above right=4ex of vec2] [text width=10ex]
-      [label=left:Many parameters]
+      [label={[align=right]left:High\\dimensional}]
       {
 	Dimension \\ reduction
       };
