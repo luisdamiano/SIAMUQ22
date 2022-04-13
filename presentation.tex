@@ -39,7 +39,7 @@
 \let\svthefootnote\thefootnote%
 \textheight 1in
 \newcommand\blankfootnote[1]{%
-  \let\thefootnote\relax\footnotetext{#1}%
+  \let\thefootnote\relax\footnotetext{\tiny #1}%
   \let\thefootnote\svthefootnote%
 }
 
@@ -229,7 +229,7 @@
       Output \\ $y \in \mathbb{R}$
     };
     \visible<5->{
-      \node [below=6ex of vec2.north, label=below:All this happens outside the GP] {
+      \node [below=6ex of vec2.north, label=below:All this happens outside the GP$~^{[1]}$] {
       };
     }
     \draw [->] [visible on=<2->] (inp.north) |- (vec1.west);
@@ -246,9 +246,14 @@
   \begin{itemize}
   \item<4-> Can we connect the functional input structure to a physical
     mechanism?
-  \item<5-> Can we incorporate the functional input structure into the GP?
+  \item<5-> Can we incorporate the functional input structure into the GP?$~^{[2]}$
   \item<6-> Can we circumvent input dimension reduction?
   \end{itemize}
+
+  \blankfootnote{\visible<5->{
+      $~^{[1]}$\cite{muehlenstaedt2017,nanty2016,wang2017,tan2019,wang2019,betancourt2020,betancourt2020a,li2021} \,
+      $~^{[2]}$\cite{morris2012,kuttubekova2019}
+    }}
 \end{frame}
 
 \begin{frame}
@@ -345,16 +350,16 @@
     };
     %%%%%
     \node (solution1a) [below=of prompt1]              [text width=25ex] {
-      Permutation\\Feature\\Importance
+      Permutation\\Feature\\Importance$~^{[1]}$
     };
     \node (solution1b) [below=of solution1a]           [text width=25ex] {
-      Automatic\\Relevance\\Determination
+      Automatic\\Relevance\\Determination$~^{[2]}$
     };
     %%%%%
     \node (solution2a) [txtbox1] [below=of prompt2]    [text
     width=25ex] [visible on=<3->]
     {
-      Permutation\\Feature\\\textit{Dynamic Importance}\footnotemark[1]
+      Permutation\\Feature\\\textit{Dynamic Importance}$~^{[3]}$
     };
     \node (solution2b) [txtbox1] [below=of solution2a] [text
     width=25ex] [visible on=<4->]{
@@ -367,7 +372,14 @@
     \draw[shorten >=2ex,shorten <=2ex,line width=1pt] [->]
     [visible on=<4->] (solution1b.east) -- (solution2b.west);
   \end{tikzpicture}
-  \blankfootnote{$~^{[1]}$ Forthcoming paper}
+  \blankfootnote{
+    $~^{[1]}$~\cite{breiman2001,strobl2007,strobl2008,nicodemus2010,fisher2019,hooker2021}
+    \,
+    $~^{[2]}$~\cite{neal1996,piironen2016} \,
+    \visible<3->{$~^{[3]}$ Forthcoming paper}
+  }
+  % \blankfootnote{$~^{[2]}$~\cite{neal1996,piironen2016}}
+  % \blankfootnote{\visible<3->{$~^{[3]}$ Forthcoming paper}}
 \end{frame}
 
 \begin{frame}
@@ -465,11 +477,11 @@
   \end{columns}
 
   \blankfootnote{
+    $\omega(t): \mathcal{T} = [0, 1] \to (0, 1]$,
     $s = \text{sign}(t - \tau)$,
     $\tau > 0$,
     $\lambda > 0$,
-    $\kappa > 0$,
-    $\mathcal{T} = [0, 1]$
+    $\kappa > 0$
   }
 \end{frame}
 
@@ -499,11 +511,6 @@
     $\sigma_{f}^2 > 0$,
     $\phi > 0$,
     $i, j = 1, \dots, N$
-  }
-  \blankfootnote{
-    \invisible<1>{
-      $\omega(t): \mathcal{T} \to (0, \infty)$
-    }
   }
 
   \begin{description}
@@ -729,7 +736,6 @@
   \begin{figure}
     \centering
     \includegraphics[width=1\textwidth]{image2934-8.png}
-    % \includegraphics[width=1\textwidth]{fit-full-posterior-weights-selected.png}
   \end{figure}
 \end{frame}
 
@@ -769,10 +775,15 @@
     \item<2-> Smooths out erratic relevance patterns
     \end{itemize}
   \item[+]<3-> Similar predictive power as vector-input
-    GP in the case study\footnote{Forthcoming paper}
+    GP in the case study$~^{[1]}$
   \item[++]<4-> Extensible to \alert{\textbf{complex
-index spaces}}, e.g., spatio-temporal spectral inputs\footnote{Future research}
-  \end{itemize}
+index spaces}}, e.g., spatio-temporal spectral inputs$~^{[2]}$
+\end{itemize}
+
+\blankfootnote{
+  \visible<3->{$~^{[1]}$~Forthcoming paper}%
+  \visible<4->{\, $~^{[2]}$~Future research}
+}
 \end{frame}
 
 \begin{frame}
@@ -786,6 +797,8 @@ index spaces}}, e.g., spatio-temporal spectral inputs\footnote{Future research}
   {\huge Thank you!}
 
   \vfill
+
+  {\tiny References and extra slides on the back}
 
   \href{ldamiano@iastate.edu}{\beamergotobutton{mail}
     ldamiano@iastate.edu}
@@ -881,7 +894,7 @@ https://github.com/luisdamiano/SIAMUQ22}
     \end{align}
   }
 
-  \blankfootnote{See~\cite{muehlenstaedt2017a} for a B-spline
+  \blankfootnote{See~\cite{muehlenstaedt2017} for a B-spline
     approach}
 \end{frame}
 
