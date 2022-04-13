@@ -382,28 +382,36 @@
       Automatic\\Relevance\\Determination
     };
     %%%%%
-    \node (solution2b) [txtbox1] [right=of solution1b]  [text width=25ex]{
+    \node (solution2b) [txtbox1] [right=of solution1b]  [text
+    width=25ex]
+    [visible on=<2->]{
       Automatic\\\textit{Dynamic Relevance}\\Determination
     };
     %%%%%
-    \node (eq1b) [below=of solution1b] {
+    \node (eq1b) [below=of solution1b] [text width=25ex] {
       $\sum_{k=1}^K \frac{{(x_{i, k} - x_{j, k})}^2}{\ell_k^2}$
     };
-    \node (eq2b) [below=of solution2b] {
+    \node (eq2b) [below=of solution2b] [text width=25ex]
+    [visible on=<3->]{
       $\int_{\mathcal{T}}
       \omega(t)
       {\left(X_i(t) - X_j(t) \right)}^2 \mathrm{d}t
       $
     };
     %%%%%
-    \node (par1b) [below=of eq1b] {
+    \node (par1b) [below=of eq1b] [text width=25ex]{
       $\ell^{-2}_1, \cdots, \ell^{-2}_K > 0$
     };
-    \node (par2b) [below=of eq2b] {
+    \node (par2b) [below=of eq2b] [text width=25ex]
+    [visible on=<4->]{
       $\omega(t): \mathcal{T} \to \mathbb{R}^+$
     };
-    \draw[shorten >=1ex,shorten <=1ex,line width=1pt] [->]
-    (solution1b.east) -- (solution2b.west);
+    \draw[shorten >=1ex,shorten <=1ex,line width=1pt]
+    [visible on=<2->] [->] (solution1b.east) -- (solution2b.west);
+    % \draw[shorten >=1ex,shorten <=1ex,line width=1pt]
+    % [visible on=<3->] [->] (eq1b.east) -- (eq2b.west);
+    % \draw[shorten >=1ex,shorten <=1ex,line width=1pt]
+    % [visible on=<4->] [->] (par1b.east) -- (par2b.west);
   \end{tikzpicture}
 \end{frame}
 
@@ -429,7 +437,7 @@
     \end{column}
     \begin{column}{0.5\textwidth}
       \begin{itemize}
-      \item<2-> The index is most relevant at $\tau$
+      \item<2-> The input is most relevant at $\tau$
 	(relevance peak)
       \item<3-> Relevance increases at a $\lambda_1 = \lambda \kappa^{-1}$ rate
 	from $t =0$ to the peak
@@ -494,7 +502,8 @@
     \cdot)$, $\lambda \sim \textsc{N}^{+}(\cdot, \cdot)$, $\log(\kappa)
     \sim \textsc{N}(\cdot, \cdot)$
   \item[Multiple inputs]<5-> e.g., correlation product
-  \item[Complex index spaces]<6-> e.g., spatio-temporal structures
+  \item[Complex index spaces]<6-> e.g., spatio-temporal spectral
+    structures AKA tesseract
   \item[Flexibility]<7-> no need to match input-output structure nor index space
   \end{description}
 \end{frame}
